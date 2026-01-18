@@ -145,7 +145,7 @@ Acest lucru permite testarea funcționalității fără input complex.
 
 ## Fișiere necesare
 
-- `tema4.py` - translatorprincipal
+- `tema4.py` - translator principal
 - `action_table.csv` - tabelă de acțiuni LR(1)
 - `result.csv` - producții numerotate
 

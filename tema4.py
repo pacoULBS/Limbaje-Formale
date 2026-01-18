@@ -36,14 +36,17 @@ def read_prod():
     return prod
 
 action_table = read_action_table()
-print("Action Table:")
-for key, values in action_table.items():
-    print(f"{key}: {','.join(values)}")
-
 prod = read_prod()
-print("\nProductions:")
-for key, values in prod.items():
-    print(f"{key}: {','.join(values)}")
+
+# Optional: afișare tabelă și producții (pentru debugging)
+DEBUG_MODE = False
+if DEBUG_MODE:
+    print("Action Table:")
+    for key, values in action_table.items():
+        print(f"{key}: {','.join(values)}")
+    print("\nProductions:")
+    for key, values in prod.items():
+        print(f"{key}: {','.join(values)}")
 
 # ============================================================================
 # PUSH DOWN TRANSLATOR - Adăugiri noi față de LRParser2.py
@@ -73,7 +76,7 @@ def parse_and_evaluate(input_string):
     
     # Pentru generarea de cod intermediar
     intermediate_code = []
-    temp_counter = [0]  # counter pentru variabile temporare
+    temp_counter = 0  # counter pentru variabile temporare
     
     # Procesăm input-ul
     input_tokens = input_string.split() + ['$']
@@ -81,22 +84,23 @@ def parse_and_evaluate(input_string):
     
     # Pentru a simula valori pentru 'id', le înlocuim cu numere
     # În practică, valorile ar veni dintr-o tabelă de simboluri
-    id_values = {}
-    id_counter = [1]
+    id_counter = 1
     
     def get_id_value(token):
         """Returnează o valoare pentru un identificator"""
+        nonlocal id_counter
         if token == 'id':
             # Simulăm că fiecare 'id' are valoarea 1, 2, 3, etc.
-            val = id_counter[0]
-            id_counter[0] += 1
+            val = id_counter
+            id_counter += 1
             return val
         return None
     
     def new_temp():
         """Generează o nouă variabilă temporară"""
-        temp_counter[0] += 1
-        return f"t{temp_counter[0]}"
+        nonlocal temp_counter
+        temp_counter += 1
+        return f"t{temp_counter}"
     
     while True:
         current_state = state_stack[-1]
@@ -231,13 +235,10 @@ def parse_and_evaluate(input_string):
             print("\n" + "="*60)
             print("Input accepted!")
             # Rezultatul final este pe stiva de atribute
-            # După ultima reducere la S, avem pe stivă: [None (pentru $), result_value (pentru S)]
-            # Extragem valoarea pentru S care este penultimul element
-            final_result = None
-            for i in range(len(token_stack) - 1, -1, -1):
-                if token_stack[i] == 'S':
-                    final_result = attribute_stack[i]
-                    break
+            # După ultima reducere la S, avem: token_stack = ['$', 'S']
+            # și attribute_stack = [None (pentru $), result (pentru S)]
+            # Deci rezultatul este pe ultima poziție: attribute_stack[-1]
+            final_result = attribute_stack[-1] if len(attribute_stack) >= 1 else None
             print(f"Final result: {final_result}")
             print("="*60)
             return True, final_result, intermediate_code
