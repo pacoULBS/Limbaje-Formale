@@ -165,7 +165,7 @@ def closure(items, G, FIRST):
                     for prod in G[B]:
                         seq = beta + [la]
                         first_seq = first_of_sequence(seq, FIRST)
-                        for b in first_seq:
+                        for b in first_seq:#o sa fie follow_seq in loc de first_seq 
                             if b == EPS:
                                 continue
                             new_item = make_item(B, prod, 0, b)
